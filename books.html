@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Available Books</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0 20px;
+      background: #f8f9fa;
+    }
+
+    h1 {
+      text-align: center;
+      margin: 20px 0;
+    }
+
+    /* Search Bar */
+    #search-bar {
+      width: 100%;
+      max-width: 500px;
+      margin: 20px auto;
+      display: flex;
+      gap: 10px;
+    }
+
+    #search-input {
+      flex: 1;
+      padding: 10px 15px;
+      font-size: 16px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+
+    #search-btn {
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+      border: none;
+      background-color: #28a745;
+      color: white;
+      border-radius: 5px;
+      transition: background 0.2s;
+    }
+
+    #search-btn:hover {
+      background-color: #218838;
+    }
+
+    /* Books Container */
+    #books-container {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      margin-top: 20px;
+      width: 100%;
+      padding: 15px;
+      box-sizing: border-box;
+    }
+
+    .book {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      background-color: #fff;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .book:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 15px rgba(0,0,0,0.25);
+    }
+
+    .book img {
+      width: 100px;
+      height: 140px;
+      object-fit: cover;
+      border-radius: 5px;
+    }
+
+    .book-info {
+      flex: 1;
+      margin-left: 20px;
+    }
+
+    .book h3 {
+      font-size: 18px;
+      margin: 0;
+      color: #333;
+    }
+
+    .book p {
+      font-size: 16px;
+      color: #555;
+      margin: 5px 0 0 0;
+    }
+
+    /* Book Actions */
+    .book-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .book-actions button {
+      padding: 6px 10px;
+      font-size: 12px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      transition: all 0.25s ease;
+      white-space: nowrap;
+    }
+
+    /* Cart Button */
+    .add-cart {
+      background: #fdf3c4;
+      color: #444;
+    }
+    .add-cart:hover {
+      background: #fff8dc;
+      font-size: 13px;
+    }
+
+    /* Wishlist Button */
+    .wishlist {
+      background: #f8d7da;
+      color: #721c24;
+    }
+    .wishlist:hover {
+      background: #fbeaec;
+      font-size: 13px;
+    }
+
+    /* Buy Now Button */
+    .buy-now {
+      background: #d4edda;
+      color: #155724;
+    }
+    .buy-now:hover {
+      background: #e8f6eb;
+      font-size: 13px;
+    }
+
+    /* Loader - sand watch */
+    #loader {
+      display: none;
+      text-align: center;
+      margin: 20px 0;
+      font-size: 40px;
+      animation: spin 1.2s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+  <h1>📖 Available Books</h1>
+
+  <!-- Search Bar -->
+  <div id="search-bar">
+    <input type="text" id="search-input" placeholder="Search books...">
+    <button id="search-btn">Search</button>
+  </div>
+
+  <div id="books-container"></div>
+  <div id="loader">⏳</div> <!-- sand watch emoji as loader -->
+
+  <script>
+    const booksContainer = document.getElementById("books-container");
+    const loader = document.getElementById("loader");
+    const searchInput = document.getElementById("search-input");
+    const searchBtn = document.getElementById("search-btn");
+
+    let currentPage = 1;
+    const limit = 20;
+    let totalPages = 60;
+    let query = "programming";
+    let isLoading = false;
+
+    async function fetchBooks(reset = false) {
+      if (reset) {
+        booksContainer.innerHTML = "";
+        currentPage = 1;
+      }
+
+      if (currentPage > totalPages || isLoading) return;
+
+      isLoading = true;
+      loader.style.display = "block";
+
+      try {
+        const response = await fetch(`https://openlibrary.org/search.json?q=${query}&page=${currentPage}&limit=${limit}`);
+        const data = await response.json();
+
+        data.docs.forEach(book => {
+          const bookDiv = document.createElement('div');
+          bookDiv.classList.add('book');
+
+          const coverId = book.cover_i ? book.cover_i : 10909258;
+          const coverUrl = `https://covers.openlibrary.org/b/id/${coverId}-M.jpg`;
+          const author = book.author_name ? book.author_name.join(', ') : 'Unknown Author';
+
+          bookDiv.innerHTML = `
+            <img src="${coverUrl}" alt="${book.title}">
+            <div class="book-info">
+              <h3>${book.title}</h3>
+              <p>${author}</p>
+            </div>
+            <div class="book-actions">
+              <button class="add-cart">🛒 Cart</button>
+              <button class="wishlist">❤️ Wishlist</button>
+              <button class="buy-now">💳 Buy Now</button>
+            </div>
+          `;
+
+          // ✅ Add to Cart (with image + quantity)
+          // ✅ Add to Cart (with image + quantity)
+bookDiv.querySelector(".add-cart").addEventListener("click", () => {
+  let cart = JSON.parse(localStorage.getItem("cart")) || [];
+  const coverUrl = `https://covers.openlibrary.org/b/id/${coverId}-M.jpg`;
+
+  let existingBook = cart.find(item => item.title === book.title);
+
+  if (existingBook) {
+    existingBook.quantity++;
+  } else {
+    cart.push({ 
+      title: book.title, 
+      author: author, 
+      cover: coverUrl,   // 👈 save full image URL instead of coverId
+      quantity: 1 
+    });
+  }
+
+  localStorage.setItem("cart", JSON.stringify(cart));
+  window.location.href = "cart.html";
+});
+
+
+          // ✅ Add to Wishlist (no duplicates, only once)
+          bookDiv.querySelector(".wishlist").addEventListener("click", () => {
+            let wishlist = JSON.parse(localStorage.getItem("wishlist")) || [];
+
+            if (!wishlist.find(item => item.title === book.title)) {
+              wishlist.push({ title: book.title, author: author, cover: coverUrl });
+              localStorage.setItem("wishlist", JSON.stringify(wishlist));
+              alert("Book added to Wishlist ❤️");
+            } else {
+              alert("Already in Wishlist!");
+            }
+          });
+
+          // ✅ Buy Now
+          bookDiv.querySelector(".buy-now").addEventListener("click", () => {
+            localStorage.setItem("buyNowBook", JSON.stringify({ 
+              title: book.title, 
+              author: author, 
+              cover: coverUrl 
+            }));
+            window.location.href = "checkout.html";
+          });
+
+          booksContainer.appendChild(bookDiv);
+        });
+
+        currentPage++;
+      } catch (err) {
+        console.error("Error fetching books:", err);
+      }
+
+      loader.style.display = "none";
+      isLoading = false;
+    }
+
+    // Initial load
+    fetchBooks();
+
+    // Infinite scroll
+    window.addEventListener("scroll", () => {
+      if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 200) {
+        fetchBooks();
+      }
+    });
+
+    // Search functionality
+    searchBtn.addEventListener("click", () => {
+      query = searchInput.value.trim() || "programming";
+      totalPages = 60;
+      fetchBooks(true);
+    });
+
+    searchInput.addEventListener("keypress", (e) => {
+      if (e.key === "Enter") {
+        query = searchInput.value.trim() || "programming";
+        totalPages = 60;
+        fetchBooks(true);
+      }
+    });
+  </script>
+</body>
+</html>

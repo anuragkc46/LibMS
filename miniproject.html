@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LibMS</title>
+  <link rel="stylesheet" href="miniproject.css">
+</head>
+<body>
+
+  <!-- Sidebar -->
+  <nav id="sidebar">
+    <ul>
+      <li><a href="#">Dashboard</a></li>
+      <li><a href="#">Books</a></li>
+      <li><a href="#">Members</a></li>
+      <li><a href="#">Issue Books</a></li>
+      <li><a href="#">Return Books</a></li>
+      <li><a href="#">Reports</a></li>
+      <li><a href="#">Settings</a></li>
+    </ul>
+  </nav>
+
+  <!-- Overlay -->
+  <div class="overlay" id="overlay"></div>
+
+  <!-- Header -->
+  <header>
+    <div style="display:flex; align-items:center; gap:10px;">
+      <span class="menu-toggle" id="menu-toggle">☰</span>
+      <div class="logo"><span>📖</span> LibMS</div>
+    </div>
+    <div class="top-menu">
+      <!-- Support Dropdown -->
+      <div class="dropdown">
+        <a href="#" class="support-btn">Support</a>
+        <div class="dropdown-content">
+          <a href="#">Feedback</a>
+          <a href="mailto:support@libms.com">Email</a>
+          <a href="#">FAQ</a>
+        </div>
+      </div>
+      <a href="#">Contact Us</a>
+      <a href="login.html">Login</a>
+      <a href="#">Get Started</a>
+    </div>
+  </header>
+
+  <!-- Main content -->
+  <main>
+    <h2>Welcome to LibMS</h2>
+    
+   <div class="card" id="total-books-card">
+  <h3>📖 Available Books</h3>
+  <p>Total: 1,200</p>
+</div>
+
+
+<div id="books-container"></div>
+
+
+    <div class="card">
+      <h3>👤 Active Members</h3>
+      <p>Total: 320</p>
+    </div>
+
+    <div class="card">
+      <h3>📅 Recently Issued Books</h3>
+      <ul>
+        <li>Java Programming - Issued to Rohan</li>
+        <li>Database Systems - Issued to Ananya</li>
+        <li>Web Development - Issued to Priya</li>
+      </ul>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    © 2025 LibMS | Designed by AlgoRush
+  </footer>
+
+  <script src="miniproject.js"></script>
+</body>
+</html>

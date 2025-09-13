@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Cart</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background: #f4f4f4;
+    margin: 0;
+    padding: 0;
+  }
+
+  header {
+    background: #333;
+    color: white;
+    padding: 15px;
+    text-align: center;
+  }
+
+  #cart-container {
+    max-width: 800px;
+    margin: 30px auto;
+    padding: 20px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  }
+
+  .cart-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid #ddd;
+    padding: 15px 0;
+  }
+
+  .cart-item img {
+    width: 70px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 5px;
+  }
+
+  .cart-info {
+    flex: 1;
+    margin-left: 15px;
+  }
+
+  .cart-info h3 {
+    margin: 0 0 5px;
+    font-size: 18px;
+  }
+
+  .cart-info p {
+    margin: 0;
+    color: #555;
+  }
+
+  .cart-actions {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .cart-actions button {
+    padding: 5px 10px;
+    font-size: 14px;
+    cursor: pointer;
+    border: none;
+    border-radius: 4px;
+    transition: 0.2s;
+  }
+
+  .quantity-display {
+    min-width: 25px;
+    text-align: center;
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+
+  .increase { background: #d4edda; color: #155724; }
+  .decrease { background: #fff3cd; color: #856404; }
+  .remove { background: #f8d7da; color: #721c24; }
+
+  .increase:hover { background: #e6f7e9; }
+  .decrease:hover { background: #fff8dc; }
+  .remove:hover { background: #fbeaec; }
+
+  #empty {
+    text-align: center;
+    padding: 30px;
+    color: #777;
+    font-size: 18px;
+  }
+
+  #back-btn {
+    display: block;
+    margin: 20px auto;
+    padding: 10px 20px;
+    font-size: 16px;
+    border: none;
+    border-radius: 5px;
+    background: #007bff;
+    color: white;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+
+  #back-btn:hover {
+    background: #0056b3;
+  }
+</style>
+</head>
+<body>
+<header>
+  <h1>🛒 My Cart</h1>
+</header>
+
+<div id="cart-container">
+  <div id="empty">Your cart is empty!</div>
+</div>
+
+<button id="back-btn" onclick="window.location.href='books.html'">⬅ Back to Books</button>
+
+<script>
+const cartContainer = document.getElementById("cart-container");
+const emptyMessage = document.getElementById("empty");
+
+function loadCart() {
+  let cart = JSON.parse(localStorage.getItem("cart")) || [];
+  cartContainer.innerHTML = "";
+
+  if(cart.length === 0) {
+    cartContainer.appendChild(emptyMessage);
+    emptyMessage.style.display = "block";
+    return;
+  }
+
+  emptyMessage.style.display = "none";
+
+  cart.forEach((book, index) => {
+    const item = document.createElement("div");
+    item.classList.add("cart-item");
+
+    item.innerHTML = `
+      <img src="${book.cover}" alt="${book.title}">
+      <div class="cart-info">
+        <h3>${book.title}</h3>
+        <p>${book.author}</p>
+      </div>
+      <div class="cart-actions">
+        <button class="decrease">-</button>
+        <div class="quantity-display">${book.quantity}</div>
+        <button class="increase">+</button>
+        <button class="remove">Remove</button>
+      </div>
+    `;
+
+    const quantityDisplay = item.querySelector(".quantity-display");
+
+    // Increase quantity
+    item.querySelector(".increase").addEventListener("click", () => {
+      cart[index].quantity++;
+      localStorage.setItem("cart", JSON.stringify(cart));
+      quantityDisplay.textContent = cart[index].quantity;
+    });
+
+    // Decrease quantity
+    item.querySelector(".decrease").addEventListener("click", () => {
+      if(cart[index].quantity > 1){
+        cart[index].quantity--;
+        quantityDisplay.textContent = cart[index].quantity;
+      } else {
+        cart.splice(index,1);
+        localStorage.setItem("cart", JSON.stringify(cart));
+        loadCart();
+      }
+      localStorage.setItem("cart", JSON.stringify(cart));
+    });
+
+    // Remove item
+    item.querySelector(".remove").addEventListener("click", () => {
+      cart.splice(index,1);
+      localStorage.setItem("cart", JSON.stringify(cart));
+      loadCart();
+    });
+
+    cartContainer.appendChild(item);
+  });
+}
+
+loadCart();
+</script>
+</body>
+</html>
